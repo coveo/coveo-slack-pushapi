@@ -1,0 +1,16 @@
+{
+  "name": "coveo-slack",
+  "version": "1.0.0",
+  "description": "Small Nodejs app to use Coveo Push API to index Slack in real time.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node src/index.js"
+  },
+  "author": "Etienne Rocheleau",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@slack/client": "^3.5.4",
+    "request": "^2.74.0"
+  }
+}
