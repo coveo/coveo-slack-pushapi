@@ -5,6 +5,7 @@ var MemoryDataStore = require('@slack/client').MemoryDataStore;
 var request = require('request');
 
 module.exports = PushClient;
+
 function PushClient(slacktoken, organizationId, sourceId, pushtoken) {
     this.slacktoken = slacktoken || '';
     this.organizationId = organizationId || '';
@@ -14,7 +15,7 @@ function PushClient(slacktoken, organizationId, sourceId, pushtoken) {
     this.bindEvents();
 }
 
-PushClient.prototype.init = function () {
+PushClient.prototype.init = function() {
     this.rtm = new RtmClient(this.slacktoken, {
         logLevel: 'error',
         dataStore: new MemoryDataStore()
@@ -39,6 +40,10 @@ PushClient.prototype.handleNewMessage = function(message) {
     var documentId = `https://${_this.team.name}.slack.com/archives/${channel}/p${timeStr}`;
     var body = _this.buildMessageBodyString(message);
 
+    console.log(`Sending message from ${_this.rtm.dataStore.getUserById(message.user).name} 
+                in channel ${_this.rtm.dataStore.getChannelGroupOrDMById(message.channel).name} 
+                @ ${message.ts}`);
+
     request({
         url: `https://push.cloud.coveo.com/v1/organizations/${_this.organizationId}/sources/${_this.sourceId}/documents`,
         qs: { documentId: documentId },
@@ -48,7 +53,7 @@ PushClient.prototype.handleNewMessage = function(message) {
             'Authorization': _this.pushtoken
         },
         body: body
-    }, function (error, response, body) {
+    }, function(error, response, body) {
         if (error) {
             console.error(error);
         }
@@ -71,6 +76,7 @@ PushClient.prototype.buildMessageBodyString = function(message) {
 
     var body = {
         message: message.text,
+        Data: message.text,
         team: _this.team.name,
         channel: channel,
         type: message.type,
@@ -81,7 +87,7 @@ PushClient.prototype.buildMessageBodyString = function(message) {
     return JSON.stringify(body);
 }
 
-PushClient.prototype.bindEvents = function () {
+PushClient.prototype.bindEvents = function() {
     var _this = this;
     this.rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function onAuthenticated(rtmStartData) { _this.handleAuthenticated(rtmStartData); });
     this.rtm.on(RTM_EVENTS.MESSAGE, function onRtmMessage(message) { _this.handleNewMessage(message); });
