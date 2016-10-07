@@ -38,3 +38,6 @@ jspm_packages
 
 # Local debug bash script for easier dev
 localdebug.sh
+
+# Workspace settings
+.vscode/*
